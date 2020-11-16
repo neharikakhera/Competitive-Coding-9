@@ -1,0 +1,87 @@
+// time complexity: for every word in dictionary, for every charcter in word 26 times iteration M*N*26
+// M: length of word, N: number of words, 26 : interations for each charcter of the word -> O(M*N*26)
+// In queue only those words will be added which are in dictionary.
+// space complexity : O(MN): M number of characters in each word; N: Number of words
+// String str = new String(str) // O(M) : length odf the word -> TC O(M*M*N*26) ->O(M^2*N*26)
+// what type charcaters are ther in input
+// is starting word included in the length of transformation sequence
+//what if no transformation sequence is possible
+// cycles in duplicate words -> are there any dupicate words in words list?
+// -> lower case alphabets -> same length (to generalize)
+
+/*class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        HashSet<String> set = new HashSet<>(wordList);
+        if(!set.contains(endWord)) return 0;
+        Queue<String> que = new LinkedList<>();
+        que.add(beginWord);
+        int level = 0;
+        
+        while(! que.isEmpty()){
+            level++;
+            int size = que.size();
+            for(int i = 0; i < size; i++){
+                String word = que.poll();
+             //   System.out.println(word);
+                char[] arr = word.toCharArray();
+                for(int k = 0; k < arr.length; k++){
+                    for(char j = 'a'; j <= 'z'; j++){
+                        char c = arr[k];
+                        arr[k] = j;
+                        String w = new String(arr);
+                    //    System.out.println(w);
+                        if(set.contains(w) && w.equals(endWord)) return level+1;
+                        if(set.contains(w)) {
+                            que.add(w);
+                            set.remove(w); // if not,  will cause time limit exceeded
+                        }
+                        arr[k] = c;
+                    }
+                    
+                }
+            }
+        }
+        return 0;
+    }
+}*/
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        HashSet<String> set = new HashSet<>(wordList);
+        if(!set.contains(endWord)) return 0;
+        Set<String> beginSet = new HashSet<>();
+        beginSet.add(beginWord);
+        Set<String> endSet = new HashSet<>();
+        endSet.add(endWord);
+        Set<String> visited = new HashSet<>(); // to avoid the traversal of same node againa and again
+        int level = 1;
+        
+        while(! beginSet.isEmpty() && ! endSet.isEmpty()){
+            if(beginSet.size() > endSet.size()){
+                Set<String> set1 = endSet;
+                endSet = beginSet;
+                beginSet = set1;
+            }
+            // set for every new level
+            Set<String> temp = new HashSet<>();
+            for(String word : beginSet){
+                char[] arr = word.toCharArray();
+                for(int i = 0; i < arr.length; i++){
+                    for(char ch = 'a'; ch <= 'z'; ch++){
+                        char old = arr[i];
+                        arr[i] = ch;
+                        String str = new String(arr);
+                        if(endSet.contains(str)) return level+1;
+                        if(! visited.contains(str) && set.contains(str)){
+                            temp.add(str);
+                            visited.add(str);
+                        }
+                        arr[i] = old;
+                    }
+                }
+            }
+           level++; 
+           beginSet = temp;
+        }
+        return 0;
+    }
+}
